@@ -7,19 +7,8 @@ import { useState } from "react";
 import { useApollo } from "@/lib/apollo";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 
-const themes = {
-  dark: {
-    background: "black",
-    color: "white",
-  },
-  light: {
-    background: "white",
-    color: "black",
-  },
-};
-
 export default function App({ Component, pageProps }: AppProps) {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<string>("light");
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
@@ -32,7 +21,8 @@ export default function App({ Component, pageProps }: AppProps) {
             style={{
               width: "100%",
               minHeight: "100vh",
-              ...themes[theme],
+              background: theme === "light" ? "white" : "black",
+              color: theme === "light" ? "black" : "white",
             }}
           >
             <Navbar />
