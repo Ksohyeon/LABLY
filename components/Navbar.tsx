@@ -34,7 +34,7 @@ function Navbar() {
               width={100}
               height={100}
             />
-            <span>{user.nickname}</span>
+            <Link href="/api/auth/logout">Logout</Link>
           </div>
         ) : (
           <Link href="/api/auth/login">Login</Link>
