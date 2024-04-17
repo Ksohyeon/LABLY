@@ -16,7 +16,7 @@ export default function ProductList({ products }: { products: Product[] }) {
     <>
       <Products>
         {products.map((product: Product) => {
-          return <ProductCart {...product} />;
+          return <ProductCart key={product.id} {...product} />;
         })}
       </Products>
     </>
