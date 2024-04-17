@@ -24,7 +24,7 @@ const Card = styled.ul`
 export default function ProductCard(product: Product) {
   console.log(product);
   return (
-    <Link href={`/product/${product.slug}`} passHref>
+    <Link id={product.id} href={`/product/${product.slug}`} passHref>
       <Card>
         <li>
           <Image
