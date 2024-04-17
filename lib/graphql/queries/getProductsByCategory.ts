@@ -1,16 +1,12 @@
 import { gql } from "graphql-request";
 
 export default gql`
-  query GetAllProducts {
-    products {
+  query getProductsByCategory($category: String!) {
+    products(where: { categories_some: { name: $category } }) {
       id
       name
       slug
       price
-      categories {
-        id
-        name
-      }
       images {
         id
         url
