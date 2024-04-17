@@ -38,7 +38,7 @@ export default function MyOrdersComp() {
 
   useEffect(() => {
     getOrders();
-  }, []);
+  }, [getOrders]);
 
   return (
     <div>
@@ -49,7 +49,7 @@ export default function MyOrdersComp() {
         {orders && (
           <>
             {orders.map((order) => (
-              <li>
+              <li key={order.id}>
                 <ul>
                   <li>수량 : {order.total}개</li>
                   <li>주문일 : {order.createdAt.slice(0, 10)}</li>
