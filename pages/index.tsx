@@ -1,22 +1,30 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import graphql from "@/lib/graphql";
 import getAllProducts from "@/lib/graphql/queries/getAllProducts";
+import ProductList from "@/components/ProductList";
 
-type Products = {
+export type Product = {
   id: string;
   name: string;
+  slug: string;
   price: number;
+  categories: {
+    id: string;
+    name: string;
+  }[];
   images: {
     id: string;
     url: string;
-  };
+  }[];
+  description?: string;
 };
 
 export const getStaticProps = (async () => {
-  const { products }: any = await graphql.request(getAllProducts);
+  const { products }: { products: Product[] } = await graphql.request(
+    getAllProducts
+  );
   return {
     revalidate: 60,
     props: {
@@ -24,13 +32,12 @@ export const getStaticProps = (async () => {
     },
   };
 }) satisfies GetStaticProps<{
-  products: Products;
+  products: Product[];
 }>;
 
 export default function Home({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  console.log("products: ", products);
   return (
     <>
       <Head>
@@ -39,7 +46,11 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main}`}></main>
+      <main className={`${styles.main}`}>
+        <div style={{ marginTop: "10vh" }}>
+          <ProductList products={products} />
+        </div>
+      </main>
     </>
   );
 }
