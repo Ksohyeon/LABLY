@@ -91,7 +91,7 @@ const OrderDiv = styled.div`
 
 export default function Cart() {
   const { user } = useUser();
-  const [cartItems, setCartItems] = useState<Object>(getCartItems());
+  const [cartItems, setCartItems] = useState<Object>({});
   const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
   const totalCost = () => {
@@ -143,6 +143,12 @@ export default function Cart() {
     clearCart();
     setCartItems({});
   };
+
+  useEffect(() => {
+    if (typeof window !== undefined) {
+      setCartItems(getCartItems());
+    }
+  }, []);
 
   useEffect(() => {
     updateCartItems(cartItems);
