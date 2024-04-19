@@ -7,16 +7,18 @@ import { useState } from "react";
 import { useApollo } from "@/lib/apollo";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import styled from "styled-components";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const PageWrapper = styled.div<{ theme: string }>`
   width: 100%;
-  min-height: 100vh;
   background: ${(prop) => (prop.theme === "light" ? "white" : "black")};
   color: ${(prop) => (prop.theme === "light" ? "black" : "white")};
   #container {
     margin-top: 130px;
   }
 `;
+
+const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState<string>("light");
@@ -26,16 +28,18 @@ export default function App({ Component, pageProps }: AppProps) {
   const apolloClient = useApollo(pageProps.initialApolloState);
   return (
     <ApolloProvider client={apolloClient}>
-      <UserProvider>
+      <QueryClientProvider client={queryClient}>
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <PageWrapper theme={theme}>
-            <Navbar />
-            <div id="container">
-              <Component {...pageProps} />
-            </div>
-          </PageWrapper>
+          <UserProvider>
+            <PageWrapper theme={theme}>
+              <Navbar />
+              <div id="container">
+                <Component {...pageProps} />
+              </div>
+            </PageWrapper>
+          </UserProvider>
         </ThemeContext.Provider>
-      </UserProvider>
+      </QueryClientProvider>
     </ApolloProvider>
   );
 }

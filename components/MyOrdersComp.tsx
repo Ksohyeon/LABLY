@@ -2,7 +2,8 @@ import graphql from "@/lib/graphql";
 import getAllOrders from "@/lib/graphql/queries/getAllOrders";
 import { TitleWrapper } from "@/pages/my-page";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 type Order = {
@@ -21,20 +22,28 @@ const OrderList = styled.ul`
   & > li:not(:nth-child(1)) {
     border-top: 0;
   }
+  .order {
+    &:hover {
+      cursor: pointer;
+      background-color: #ececec;
+    }
+  }
 `;
 
 export default function MyOrdersComp() {
+  const router = useRouter();
   const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>();
   const ordersRef = useRef<Order[]>();
 
-  const getOrders = async () => {
+  const getOrders = useCallback(async () => {
     const data: { orders: Order[] } = await graphql.request(getAllOrders, {
       email: user?.name,
     });
+    console.log(data);
     setOrders(data.orders);
     ordersRef.current = data.orders;
-  };
+  }, []);
 
   useEffect(() => {
     getOrders();
@@ -49,10 +58,16 @@ export default function MyOrdersComp() {
         {orders && (
           <>
             {orders.map((order) => (
-              <li key={order.id}>
+              <li
+                className="order"
+                key={order.id}
+                onClick={() => {
+                  router.push(`/order-detail/${order.id}`);
+                }}
+              >
                 <ul>
+                  <li>{order.createdAt.slice(0, 10)}</li>
                   <li>수량 : {order.total}개</li>
-                  <li>주문일 : {order.createdAt.slice(0, 10)}</li>
                 </ul>
               </li>
             ))}

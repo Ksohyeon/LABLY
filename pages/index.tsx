@@ -1,9 +1,26 @@
-import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import type { InferGetStaticPropsType, GetStaticProps } from "next";
+import Head from "next/head";
 import graphql from "@/lib/graphql";
+import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import getAllProducts from "@/lib/graphql/queries/getAllProducts";
 import ProductList from "@/components/ProductList";
+import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import getRecentUpdatedProducts from "@/lib/graphql/queries/getRecentUpdatedProducts";
+
+const ProductListWapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  margin: 70px 0;
+  & > button {
+    margin-top: 20px;
+    padding: 10px 0;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
 
 export type Product = {
   id: string;
@@ -23,7 +40,10 @@ export type Product = {
 
 export const getStaticProps = (async () => {
   const { products }: { products: Product[] } = await graphql.request(
-    getAllProducts
+    getRecentUpdatedProducts,
+    {
+      first: 60,
+    }
   );
   return {
     revalidate: 60,
@@ -38,6 +58,15 @@ export const getStaticProps = (async () => {
 export default function Home({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const productsNumPerPage = useRef(12);
+  const [pageNum, setPageNum] = useState<number>(1);
+  const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const sliced = products.slice(0, pageNum * productsNumPerPage.current);
+    setVisibleProducts(sliced);
+  }, [pageNum, setVisibleProducts]);
+
   return (
     <>
       <Head>
@@ -47,9 +76,20 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main}`}>
-        <div style={{ marginTop: "10vh" }}>
-          <ProductList products={products} />
-        </div>
+        <ProductListWapper>
+          <h2 style={{ textAlign: "center" }}>NEW</h2>
+          <br></br>
+          <ProductList products={visibleProducts} />
+          {products.length !== visibleProducts.length && (
+            <button
+              onClick={() => {
+                setPageNum((prev) => prev + 1);
+              }}
+            >
+              더보기
+            </button>
+          )}
+        </ProductListWapper>
       </main>
     </>
   );
