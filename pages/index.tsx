@@ -1,22 +1,53 @@
-import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-
-import type { InferGetStaticPropsType, GetStaticProps } from "next";
+import Head from "next/head";
 import graphql from "@/lib/graphql";
-import getAllProducts from "@/lib/graphql/queries/getAllProducts";
+import type { InferGetStaticPropsType, GetStaticProps } from "next";
+import ProductList from "@/components/ProductList";
+import { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import getRecentUpdatedProducts from "@/lib/graphql/queries/getRecentUpdatedProducts";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import getLikes from "@/lib/graphql/queries/getLikes";
 
-type Products = {
+const ProductListWapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  margin: 70px 0;
+  & > button {
+    margin-top: 20px;
+    padding: 10px 0;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
+
+export type Product = {
   id: string;
   name: string;
+  slug: string;
   price: number;
+  categories: {
+    id: string;
+    name: string;
+  }[];
   images: {
     id: string;
     url: string;
-  };
+  }[];
+  description?: string;
+  like?: boolean;
+  likeId: string;
 };
 
 export const getStaticProps = (async () => {
-  const { products }: any = await graphql.request(getAllProducts);
+  const { products }: { products: Product[] } = await graphql.request(
+    getRecentUpdatedProducts,
+    {
+      first: 60,
+    }
+  );
   return {
     revalidate: 60,
     props: {
@@ -24,13 +55,49 @@ export const getStaticProps = (async () => {
     },
   };
 }) satisfies GetStaticProps<{
-  products: Products;
+  products: Product[];
 }>;
 
 export default function Home({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  console.log("products: ", products);
+  const productsNumPerPage = useRef(12);
+  const [productsState, setProductsState] = useState<Product[]>(products);
+  const [pageNum, setPageNum] = useState<number>(1);
+  const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
+  const { user } = useUser();
+
+  const getLikesFn = useCallback(async () => {
+    const { likes }: { likes: { id: string; slug: string; email: string }[] } =
+      await graphql.request(getLikes, {
+        email: user?.name || "",
+      });
+    const likesProducts = likes.map((like) => like.slug);
+    const productsWithLike = products.map((product) => {
+      if (likesProducts.includes(product.slug)) {
+        return {
+          ...product,
+          like: true,
+          likeId: likes[likesProducts.indexOf(product.slug)].id,
+        };
+      } else return { ...product, like: false };
+    });
+    console.log("likes: ", likes);
+    console.log("likesProducts: ", likesProducts);
+    console.log("productsWithLike: ", productsWithLike);
+    setProductsState(productsWithLike);
+  }, [user, setProductsState]);
+
+  useEffect(() => {
+    const sliced = productsState.slice(0, pageNum * productsNumPerPage.current);
+    console.log("visibleProduct: ", sliced);
+    setVisibleProducts(sliced);
+  }, [pageNum, productsState, setVisibleProducts]);
+
+  useEffect(() => {
+    getLikesFn();
+  }, []);
+
   return (
     <>
       <Head>
@@ -39,7 +106,25 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main}`}></main>
+      <main className={`${styles.main}`}>
+        <ProductListWapper>
+          <h2 style={{ textAlign: "center" }}>NEW</h2>
+          <br></br>
+          <ProductList
+            products={visibleProducts}
+            setProductsState={setProductsState}
+          />
+          {products.length !== visibleProducts.length && (
+            <button
+              onClick={() => {
+                setPageNum((prev) => prev + 1);
+              }}
+            >
+              더보기
+            </button>
+          )}
+        </ProductListWapper>
+      </main>
     </>
   );
 }
