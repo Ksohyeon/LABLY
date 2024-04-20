@@ -1,7 +1,12 @@
 import graphql from "@/lib/graphql";
 import getAllProducts from "@/lib/graphql/queries/getAllProducts";
 import { Product } from "..";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import {
+  GetServerSideProps,
+  GetStaticProps,
+  InferGetServerSidePropsType,
+  InferGetStaticPropsType,
+} from "next";
 import getProductDetail from "@/lib/graphql/queries/getProductDetail";
 import Image from "next/image";
 import styled from "styled-components";
@@ -37,6 +42,9 @@ const ProductWrapper = styled.div`
     width: 100%;
     padding: 0 2vw;
   }
+  .quantiy {
+    margin-top: 20px;
+  }
   .btns {
     width: 100%;
     position: absolute;
@@ -56,20 +64,20 @@ const Button = styled.button`
   }
 `;
 
-export async function getStaticPaths() {
-  const { products }: { products: Product[] } = await graphql.request(
-    getAllProducts
-  );
-  const paths = products.map((product) => ({
-    params: {
-      slug: product.slug,
-    },
-  }));
-  return {
-    paths,
-    fallback: false,
-  };
-}
+// export async function getStaticPaths() {
+//   const { products }: { products: Product[] } = await graphql.request(
+//     getAllProducts
+//   );
+//   const paths = products.map((product) => ({
+//     params: {
+//       slug: product.slug,
+//     },
+//   }));
+//   return {
+//     paths,
+//     fallback: false,
+//   };
+// }
 
 export type Review = {
   id: string;
@@ -80,7 +88,7 @@ export type Review = {
   product: { slug: string };
 };
 
-export const getStaticProps = (async (context) => {
+export const getServerSideProps = (async (context) => {
   const { products }: { products: Product[] } = await graphql.request(
     getProductDetail,
     {
@@ -99,7 +107,7 @@ export const getStaticProps = (async (context) => {
       reviews: reviews,
     },
   };
-}) satisfies GetStaticProps<{
+}) satisfies GetServerSideProps<{
   product: Product;
   reviews: Review[];
 }>;
@@ -107,11 +115,9 @@ export const getStaticProps = (async (context) => {
 export default function ProductPage({
   product,
   reviews,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [quantity, setQuantity] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  console.log("reviews: ", reviews);
 
   const handleAddCartItem = () => {
     if (typeof window !== undefined)
@@ -151,7 +157,7 @@ export default function ProductPage({
             <div>{product.price}원</div>
             <br></br>
             <div>{product.description}</div>
-            <div>
+            <div className="quantiy">
               <QuantityInput quantity={quantity} setQuantity={setQuantity} />
             </div>
             <div className="btns">

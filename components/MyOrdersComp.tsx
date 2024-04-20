@@ -14,7 +14,7 @@ type Order = {
 };
 
 const OrderList = styled.ul`
-  margin-top: 20px;
+  margin: 20px 50px 0 0;
   & > li {
     border: 1px solid gray;
     padding: 10px;

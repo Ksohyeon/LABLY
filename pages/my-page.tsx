@@ -2,6 +2,9 @@ import MyOrdersComp from "@/components/MyOrdersComp";
 import styled from "styled-components";
 import { SlArrowRight } from "react-icons/sl";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import MyLikeProductsComp from "@/components/MyLikeProductsComp";
 
 const PageWapper = styled.div`
   padding-top: 20px;
@@ -67,6 +70,9 @@ type CompType = "OrderList" | "LikeList";
 
 export default function MyPage() {
   const [selectedComp, setSelectedComp] = useState<CompType>("OrderList");
+  const likes = useSelector((state: RootState) => state.likes);
+
+  console.log("likes: ", likes);
   return (
     <PageWapper>
       <SideBar>
@@ -94,7 +100,13 @@ export default function MyPage() {
           </li>
         </ul>
       </SideBar>
-      <div>{selectedComp === "OrderList" ? <MyOrdersComp /> : <></>}</div>
+      <div>
+        {selectedComp === "OrderList" ? (
+          <MyOrdersComp />
+        ) : (
+          <MyLikeProductsComp />
+        )}
+      </div>
     </PageWapper>
   );
 }
