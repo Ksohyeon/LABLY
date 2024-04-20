@@ -6,13 +6,16 @@ import ProductList from "@/components/ProductList";
 import getCategories from "@/lib/graphql/queries/getCategories";
 import styled from "styled-components";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import getLikes from "@/lib/graphql/queries/getLikes";
 
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 50px;
   & > h2 {
     margin: 7vh 0 5vh;
     font-weight: bolder;
@@ -53,9 +56,29 @@ export const getStaticProps = (async (context) => {
 export default function CatetoryProducts({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const { user } = useUser();
   const params = useParams<{ category: string }>();
-  console.log("category: ", params);
+  const [productsState, setProductsState] = useState<Product[]>(products);
   const [categoryState, setCategoryState] = useState<string>("");
+
+  const getLikesFn = useCallback(async () => {
+    console.log("user: ", user);
+    const { likes }: { likes: { id: string; slug: string; email: string }[] } =
+      await graphql.request(getLikes, {
+        email: user?.name || "",
+      });
+    const likesProducts = likes.map((like) => like.slug);
+    const productsWithLike = products.map((product) => {
+      if (likesProducts.includes(product.slug)) {
+        return {
+          ...product,
+          like: true,
+          likeId: likes[likesProducts.indexOf(product.slug)].id,
+        };
+      } else return { ...product, like: false };
+    });
+    setProductsState(productsWithLike);
+  }, [user, setProductsState]);
 
   useEffect(() => {
     const category = params.category;
@@ -70,10 +93,18 @@ export default function CatetoryProducts({
     else if (category === "Hats") setCategoryState("모자");
     else if (category === "") setCategoryState("");
   }, [params]);
+
+  useEffect(() => {
+    getLikesFn();
+  }, [getLikesFn]);
+
   return (
     <ListWrapper>
       <h2>{categoryState}</h2>
-      <ProductList products={products} />
+      <ProductList
+        products={productsState}
+        setProductsState={setProductsState}
+      />
     </ListWrapper>
   );
 }

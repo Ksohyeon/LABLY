@@ -37,6 +37,9 @@ const ProductWrapper = styled.div`
     width: 100%;
     padding: 0 2vw;
   }
+  .quantiy {
+    margin-top: 20px;
+  }
   .btns {
     width: 100%;
     position: absolute;
@@ -111,8 +114,6 @@ export default function ProductPage({
   const [quantity, setQuantity] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  console.log("reviews: ", reviews);
-
   const handleAddCartItem = () => {
     if (typeof window !== undefined)
       addCartItem({
@@ -151,7 +152,7 @@ export default function ProductPage({
             <div>{product.price}원</div>
             <br></br>
             <div>{product.description}</div>
-            <div>
+            <div className="quantiy">
               <QuantityInput quantity={quantity} setQuantity={setQuantity} />
             </div>
             <div className="btns">

@@ -11,6 +11,7 @@ const NavWarpper = styled.nav<{ scrollDirection: ScrollDirection }>`
   position: fixed;
   top: 0;
   width: 100vw;
+  padding: 0 10px;
   background-color: white;
   transform: ${(prop) =>
     prop.scrollDirection === "DOWN" ? "translateY(-80px)" : "translateY(0)"};

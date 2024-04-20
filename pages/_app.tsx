@@ -7,6 +7,8 @@ import { useState } from "react";
 import { useApollo } from "@/lib/apollo";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import styled from "styled-components";
+import { store } from "@/redux/store";
+import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const PageWrapper = styled.div<{ theme: string }>`
@@ -28,18 +30,20 @@ export default function App({ Component, pageProps }: AppProps) {
   const apolloClient = useApollo(pageProps.initialApolloState);
   return (
     <ApolloProvider client={apolloClient}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <UserProvider>
-            <PageWrapper theme={theme}>
-              <Navbar />
-              <div id="container">
-                <Component {...pageProps} />
-              </div>
-            </PageWrapper>
-          </UserProvider>
-        </ThemeContext.Provider>
-      </QueryClientProvider>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            <UserProvider>
+              <PageWrapper theme={theme}>
+                <Navbar />
+                <div id="container">
+                  <Component {...pageProps} />
+                </div>
+              </PageWrapper>
+            </UserProvider>
+          </ThemeContext.Provider>
+        </QueryClientProvider>
+      </Provider>
     </ApolloProvider>
   );
 }

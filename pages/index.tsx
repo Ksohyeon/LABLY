@@ -2,11 +2,12 @@ import styles from "@/styles/Home.module.css";
 import Head from "next/head";
 import graphql from "@/lib/graphql";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
-import getAllProducts from "@/lib/graphql/queries/getAllProducts";
 import ProductList from "@/components/ProductList";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import getRecentUpdatedProducts from "@/lib/graphql/queries/getRecentUpdatedProducts";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import getLikes from "@/lib/graphql/queries/getLikes";
 
 const ProductListWapper = styled.div`
   display: flex;
@@ -36,6 +37,8 @@ export type Product = {
     url: string;
   }[];
   description?: string;
+  like?: boolean;
+  likeId: string;
 };
 
 export const getStaticProps = (async () => {
@@ -59,13 +62,42 @@ export default function Home({
   products,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const productsNumPerPage = useRef(12);
+  const [productsState, setProductsState] = useState<Product[]>(products);
   const [pageNum, setPageNum] = useState<number>(1);
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
+  const { user } = useUser();
+
+  const getLikesFn = useCallback(async () => {
+    console.log("user: ", user);
+    const { likes }: { likes: { id: string; slug: string; email: string }[] } =
+      await graphql.request(getLikes, {
+        email: user?.name || "",
+      });
+    const likesProducts = likes.map((like) => like.slug);
+    const productsWithLike = products.map((product) => {
+      if (likesProducts.includes(product.slug)) {
+        return {
+          ...product,
+          like: true,
+          likeId: likes[likesProducts.indexOf(product.slug)].id,
+        };
+      } else return { ...product, like: false };
+    });
+    console.log("likes: ", likes);
+    console.log("likesProducts: ", likesProducts);
+    console.log("productsWithLike: ", productsWithLike);
+    setProductsState(productsWithLike);
+  }, [user, setProductsState]);
 
   useEffect(() => {
-    const sliced = products.slice(0, pageNum * productsNumPerPage.current);
+    const sliced = productsState.slice(0, pageNum * productsNumPerPage.current);
+    console.log("visibleProduct: ", sliced);
     setVisibleProducts(sliced);
-  }, [pageNum, setVisibleProducts]);
+  }, [pageNum, productsState, setVisibleProducts]);
+
+  useEffect(() => {
+    getLikesFn();
+  }, []);
 
   return (
     <>
@@ -79,7 +111,10 @@ export default function Home({
         <ProductListWapper>
           <h2 style={{ textAlign: "center" }}>NEW</h2>
           <br></br>
-          <ProductList products={visibleProducts} />
+          <ProductList
+            products={visibleProducts}
+            setProductsState={setProductsState}
+          />
           {products.length !== visibleProducts.length && (
             <button
               onClick={() => {

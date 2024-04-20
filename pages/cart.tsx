@@ -79,12 +79,13 @@ const OrderDiv = styled.div`
   width: 100vw;
   padding: 20px;
   font-size: medium;
-  background-color: #f3d52c;
+  background-color: #ffcf3e;
   &:hover {
     cursor: pointer;
+    background-color: #ffc400;
+    font-weight: bolder;
   }
   & > span {
-    font-weight: bold;
     font-size: larger;
   }
 `;
