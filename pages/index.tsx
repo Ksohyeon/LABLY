@@ -68,7 +68,6 @@ export default function Home({
   const { user } = useUser();
 
   const getLikesFn = useCallback(async () => {
-    console.log("user: ", user);
     const { likes }: { likes: { id: string; slug: string; email: string }[] } =
       await graphql.request(getLikes, {
         email: user?.name || "",

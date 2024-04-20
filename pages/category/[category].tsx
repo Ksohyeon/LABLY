@@ -62,7 +62,6 @@ export default function CatetoryProducts({
   const [categoryState, setCategoryState] = useState<string>("");
 
   const getLikesFn = useCallback(async () => {
-    console.log("user: ", user);
     const { likes }: { likes: { id: string; slug: string; email: string }[] } =
       await graphql.request(getLikes, {
         email: user?.name || "",
@@ -91,7 +90,6 @@ export default function CatetoryProducts({
     else if (category === "Accessories") setCategoryState("악세서리");
     else if (category === "Bags") setCategoryState("가방");
     else if (category === "Hats") setCategoryState("모자");
-    else if (category === "") setCategoryState("");
   }, [params]);
 
   useEffect(() => {

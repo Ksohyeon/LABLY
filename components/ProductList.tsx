@@ -19,15 +19,13 @@ export default function ProductList({
   return (
     <>
       <Products>
-        {products.map((product: Product) => {
-          return (
-            <ProductCart
-              key={product.id}
-              product={product}
-              setProductsState={setProductsState}
-            />
-          );
-        })}
+        {products.map((product: Product) => (
+          <ProductCart
+            key={product.id}
+            product={product}
+            setProductsState={setProductsState}
+          />
+        ))}
       </Products>
     </>
   );
