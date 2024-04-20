@@ -89,9 +89,18 @@ const OrderDiv = styled.div`
   }
 `;
 
+const getCartItemsfromSessionStorage = () => {
+  if (typeof window !== undefined) {
+    return getCartItems();
+  }
+  return {};
+};
+
 export default function Cart() {
   const { user } = useUser();
-  const [cartItems, setCartItems] = useState<Object>({});
+  const [cartItems, setCartItems] = useState<Object>(
+    getCartItemsfromSessionStorage()
+  );
   const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
   const totalCost = () => {
@@ -143,12 +152,6 @@ export default function Cart() {
     clearCart();
     setCartItems({});
   };
-
-  useEffect(() => {
-    if (typeof window !== undefined) {
-      setCartItems(getCartItems());
-    }
-  }, []);
 
   useEffect(() => {
     updateCartItems(cartItems);

@@ -10,6 +10,7 @@ export type CartItem = {
 const CART_ITEMS = "cartItems";
 
 export function getCartItems() {
+  if (typeof window === "undefined") return {};
   return JSON.parse(sessionStorage.getItem(CART_ITEMS) || "{}");
 }
 
