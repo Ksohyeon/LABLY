@@ -49,7 +49,7 @@ export default function MyLikeProductsComp() {
       </TitleWrapper>
       <ul>
         {likes.map((like) => (
-          <li>
+          <li key={like.id}>
             <Link href={`/product/${like.slug}`}>
               <ItemDiv>
                 <Image
