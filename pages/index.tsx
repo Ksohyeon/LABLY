@@ -8,18 +8,49 @@ import styled from "styled-components";
 import getRecentUpdatedProducts from "@/lib/graphql/queries/getRecentUpdatedProducts";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import getLikes from "@/lib/graphql/queries/getLikes";
+import Image from "next/image";
+import image1 from "@/public/assets/images/main1.jpeg";
+import image2 from "@/public/assets/images/main2.jpeg";
+import NeonText from "@/components/atoms/NeonText";
 
 const ProductListWapper = styled.div`
   display: flex;
   flex-direction: column;
   align-content: center;
-  margin: 70px 0;
+  margin: 50px 0;
   & > button {
     margin-top: 20px;
     padding: 10px 0;
     &:hover {
       cursor: pointer;
     }
+  }
+`;
+
+const ImageGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 60vh;
+  background-color: black;
+  overflow: hidden;
+  & > img {
+    height: 60vh;
+    width: auto;
+  }
+  .neon1,
+  .neon2 {
+    position: absolute;
+    height: 100px;
+  }
+  .neon1 {
+    transform: rotateZ(-90deg) translateY(-100px);
+    left: 0;
+  }
+  .neon2 {
+    right: 0;
+    transform: rotateZ(90deg) translateY(-100px);
   }
 `;
 
@@ -107,6 +138,16 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main}`}>
+        <ImageGroup>
+          <div className="neon1">
+            <NeonText text="LABLY" />
+          </div>
+          <Image alt="main-img" src={image1} />
+          <Image alt="main-img" src={image2} />
+          <div className="neon2">
+            <NeonText text="LABLY" />
+          </div>
+        </ImageGroup>
         <ProductListWapper>
           <h2 style={{ textAlign: "center" }}>NEW</h2>
           <br></br>

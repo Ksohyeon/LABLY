@@ -130,6 +130,10 @@ export default function Cart() {
       alert("로그인이 필요합니다.");
       return;
     }
+    if (Object.values(cartItems).length === 0) {
+      alert("선택된 상품이 없습니다");
+      return;
+    }
     if (type === "All") {
       const orderItems = [];
       let total = 0;

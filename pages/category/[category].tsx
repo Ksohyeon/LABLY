@@ -77,7 +77,11 @@ export default function CatetoryProducts({
       } else return { ...product, like: false };
     });
     setProductsState(productsWithLike);
-  }, [user, setProductsState]);
+  }, [user, setProductsState, products]);
+
+  useEffect(() => {
+    getLikesFn();
+  }, [getLikesFn]);
 
   useEffect(() => {
     const category = params.category;
@@ -91,10 +95,6 @@ export default function CatetoryProducts({
     else if (category === "Bags") setCategoryState("가방");
     else if (category === "Hats") setCategoryState("모자");
   }, [params]);
-
-  useEffect(() => {
-    getLikesFn();
-  }, [getLikesFn]);
 
   return (
     <ListWrapper>

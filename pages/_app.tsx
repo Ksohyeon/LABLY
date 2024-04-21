@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { store } from "@/redux/store";
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Footer from "@/components/Footer";
 
 const PageWrapper = styled.div<{ theme: string }>`
   width: 100%;
@@ -17,6 +18,7 @@ const PageWrapper = styled.div<{ theme: string }>`
   color: ${(prop) => (prop.theme === "light" ? "black" : "white")};
   #container {
     margin-top: 130px;
+    min-height: calc(100vh - 130px);
   }
 `;
 
@@ -39,6 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <div id="container">
                   <Component {...pageProps} />
                 </div>
+                <Footer />
               </PageWrapper>
             </UserProvider>
           </ThemeContext.Provider>
