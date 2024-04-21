@@ -11,7 +11,6 @@ const NavWarpper = styled.nav<{ scrollDirection: ScrollDirection }>`
   position: fixed;
   top: 0;
   width: 100vw;
-  padding: 0 10px;
   background-color: white;
   transform: ${(prop) =>
     prop.scrollDirection === "DOWN" ? "translateY(-80px)" : "translateY(0)"};
@@ -26,7 +25,7 @@ const NavDiv = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 30px;
 `;
 const Logo = styled.div`
   position: absolute;
@@ -55,20 +54,23 @@ const CategoryNav = styled.div`
   align-items: center;
   li {
     display: inline-block;
-    font-weight: bolder;
+    font-weight: bold;
     &:hover {
-      background-color: #e0e0e0;
       cursor: pointer;
     }
-    li {
-      &:hover {
-        background-color: #d0d0d0;
-      }
-    }
+  }
+  a {
+    width: 100px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
 const CategoryLi = styled.li`
+  position: relative;
+
   div:nth-child(1) {
     width: 100px;
     height: 50px;
@@ -80,21 +82,106 @@ const CategoryLi = styled.li`
     width: 100px;
     position: absolute;
     display: none;
-    background-color: #dddddddb;
+    background-color: #ffffffdb;
+    box-shadow: 0 0 2px #b7b7b7db;
     li {
-      padding: 10px;
+      display: block;
+      margin: 0;
+      &:hover {
+        color: #ffc400;
+      }
     }
+  }
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    transform: translateX(-50%);
+    transition: all 0.5s;
+    background-color: #ffcc00;
+    z-index: 99999;
   }
   &:hover {
     div:nth-child(2) {
       display: block;
     }
-    li {
-      display: block;
-      margin: 0;
+    &:after {
+      width: 100%;
     }
   }
 `;
+
+const categoris = [
+  {
+    category: "아우터",
+    link: "/category/Outers",
+    children: [
+      {
+        category: "후드",
+        link: "/category/Hoodies",
+      },
+      {
+        category: "코트",
+        link: "/category/Coats",
+      },
+      {
+        category: "패딩",
+        link: "/category/Paddings",
+      },
+    ],
+  },
+  {
+    category: "상의",
+    link: "/category/Tops",
+    children: [
+      {
+        category: "티셔츠",
+        link: "/category/T-Shirts",
+      },
+      {
+        category: "니트",
+        link: "/category/Tops",
+      },
+    ],
+  },
+  {
+    category: "하의",
+    link: "/category/Pants",
+    children: [],
+  },
+  {
+    category: "스커트",
+    link: "/category/Skirts",
+    children: [],
+  },
+  {
+    category: "원피스",
+    link: "/category/Dresses",
+    children: [],
+  },
+  {
+    category: "신발",
+    link: "/category/Shoes",
+    children: [],
+  },
+  {
+    category: "악세사리",
+    link: "/category/Accessories",
+    children: [
+      {
+        category: "가방",
+        link: "/category/Bags",
+      },
+      {
+        category: "모자",
+        link: "/category/Hats",
+      },
+    ],
+  },
+];
 
 type ScrollDirection = "UP" | "DOWN";
 
@@ -165,94 +252,22 @@ function Navbar() {
       </NavDiv>
       <CategoryNav>
         <ul>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Outers"}>아우터</Link>
-            </div>
-            <div>
-              <ul>
-                <li>
-                  <Link href={"/category/Hoodies"}>후드</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Coats"}>코트</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Paddings"}>패딩</Link>
-                </li>
-              </ul>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Tops"}>상의</Link>
-            </div>
-            <div>
-              <ul>
-                <li>
-                  <Link href={"/category/T-Shirts"}>티셔츠</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Tops"}>니트</Link>
-                </li>
-              </ul>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Pants"}>하의</Link>
-            </div>
-            <div>
-              <ul>
-                <li>
-                  <Link href={"/category/Pants"}>청바지</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Pants"}>슬랙스</Link>
-                </li>
-              </ul>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Skirts"}>스커트</Link>
-            </div>
-            <div>
-              <ul>
-                <li>
-                  <Link href={"/category/Skirts"}>롱스커트</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Skirts"}>미니스커트</Link>
-                </li>
-              </ul>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Dresses"}>원피스</Link>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Shoes"}>신발</Link>
-            </div>
-          </CategoryLi>
-          <CategoryLi>
-            <div>
-              <Link href={"/category/Accessories"}>악세사리</Link>
-            </div>
-            <div>
-              <ul>
-                <li>
-                  <Link href={"/category/Bags"}>가방</Link>
-                </li>
-                <li>
-                  <Link href={"/category/Hats"}>모자</Link>
-                </li>
-              </ul>
-            </div>
-          </CategoryLi>
+          {categoris.map((category) => (
+            <CategoryLi key={category.category}>
+              <div>
+                <Link href={`${category.link}`}>{category.category}</Link>
+              </div>
+              <div>
+                <ul>
+                  {category.children.map((child) => (
+                    <li key={child.category}>
+                      <Link href={`${child.link}`}>{child.category}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CategoryLi>
+          ))}
         </ul>
       </CategoryNav>
       <hr />
