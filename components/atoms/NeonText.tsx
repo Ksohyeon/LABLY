@@ -58,8 +58,8 @@ const TextList = styled.ul`
 export default function NeonText({ text }: { text: string }) {
   return (
     <TextList>
-      {text.split("").map((char) => (
-        <li>{char}</li>
+      {text.split("").map((char, index) => (
+        <li key={char + index}>{char}</li>
       ))}
     </TextList>
   );
